@@ -3,9 +3,29 @@ name: 每日股票分析
 on:
   # 定时触发 - 每天北京时间 18:00 (UTC 10:00)
   schedule:
-    - cron: '0 10 * * 1-5'     # 周一到周五，UTC 10:00 = 北京时间 18:00
+    #- cron: '0 10 * * 1-5'     # 周一到周五，UTC 10:00 = 北京时间 18:00
+  on:
+  schedule:
+    # 9:30 AM Beijing Time (1:30 UTC)
+    - cron: '30 1 * * 1-5'
+    # 12:00 PM Beijing Time (4:00 UTC)
+    - cron: '0 4 * * 1-5'
+    # 3:00 PM Beijing Time (7:00 UTC)
+    - cron: '0 7 * * 1-5'
+    # 6:00 PM Beijing Time (10:00 UTC)
+    - cron: '0 10 * * 1-5'
+    # 9:00 PM Beijing Time (13:00 UTC)
+    - cron: '0 13 * * 1-5'
+ on:
+  schedule:
+    # 6:00 PM Beijing Time (10:00 UTC), Monday to Friday
+    - cron: '0 10 * * 1-5'
+    # 9:00 PM Beijing Time (13:00 UTC), Monday to Friday
+    - cron: '0 13 * * 1-5'
+    # 9:30 AM Beijing Time (1:30 UTC), Monday to Friday
+    - cron: '30 1 * * 1-5'
   
-  # 手动触发
+  # Keep your manual trigger
   workflow_dispatch:
     inputs:
       mode:
