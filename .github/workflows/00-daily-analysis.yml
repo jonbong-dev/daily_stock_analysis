@@ -117,8 +117,8 @@ jobs:
           AIHUBMIX_KEY: ${{ secrets.AIHUBMIX_KEY }}
 
           # OpenAI 兼容 API（备选）
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_API_KEYS: ${{ secrets.OPENAI_API_KEYS }}
+          OPENAI_API_KEY: ${{ secrets.AHWwjtbqLIW0_hJbp5KFn5bKHwef0V72oCyiDr7G98s26qDKR0a2dmLoz5sSzByh }}
+          OPENAI_API_KEYS: ${{ secrets.aQUquOhpGmbFC_qRu6m7DakS0W6H_VLhCoMdg_43mCsxvCtKZPCL787ReZW-NgbE }}
           OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL || secrets.OPENAI_BASE_URL }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || secrets.OPENAI_MODEL }}
 
