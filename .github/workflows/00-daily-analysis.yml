@@ -79,9 +79,9 @@ jobs:
           LITELLM_CONFIG_YAML: ${{ vars.LITELLM_CONFIG_YAML || secrets.LITELLM_CONFIG_YAML }}
           LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}
           
-          # 强制硬编码 Gemini 模型，忽略 GitHub Variables 中的无效 HuggingFace 覆盖值
-          LITELLM_MODEL: 'gemini/gemini-2.5-flash'
-          LITELLM_FALLBACK_MODELS: 'gemini/gemini-2.0-flash'
+          # LiteLLM 使用 OpenAI 模型配置
+          LITELLM_MODEL: ${{ vars.LITELLM_MODEL || 'openai/gpt-4o' }}
+          LITELLM_FALLBACK_MODELS: ${{ vars.LITELLM_FALLBACK_MODELS || 'openai/gpt-4o-mini' }}
           
           AGENT_LITELLM_MODEL: ${{ vars.AGENT_LITELLM_MODEL || secrets.AGENT_LITELLM_MODEL }}
           VISION_MODEL: ${{ vars.VISION_MODEL || secrets.VISION_MODEL }}
@@ -101,20 +101,13 @@ jobs:
           LLM_HERMES_MODELS: ${{ vars.LLM_HERMES_MODELS || secrets.LLM_HERMES_MODELS }}
           LLM_HERMES_ENABLED: ${{ vars.LLM_HERMES_ENABLED || secrets.LLM_HERMES_ENABLED }}
 
-          # Gemini AI
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_API_KEYS: ${{ secrets.GEMINI_API_KEYS }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || secrets.GEMINI_MODEL || 'gemini-3-flash-preview' }}
-          GEMINI_MODEL_FALLBACK: ${{ vars.GEMINI_MODEL_FALLBACK || secrets.GEMINI_MODEL_FALLBACK || 'gemini-2.5-flash' }}
-          GEMINI_REQUEST_DELAY: '3.0'
-
           # AIHubMix
           AIHUBMIX_KEY: ${{ secrets.AIHUBMIX_KEY }}
 
-          # OpenAI
+          # OpenAI 兼容 API
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEYS: ${{ secrets.OPENAI_API_KEYS }}
-          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL || secrets.OPENAI_BASE_URL || 'https://integrate.api.nvidia.com/v1' }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL || secrets.OPENAI_BASE_URL || 'https://api.openai.com/v1' }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || secrets.OPENAI_MODEL }}
 
           # DeepSeek
@@ -144,15 +137,6 @@ jobs:
           LLM_SECONDARY_MODELS: ${{ vars.LLM_SECONDARY_MODELS || secrets.LLM_SECONDARY_MODELS }}
           LLM_SECONDARY_ENABLED: ${{ vars.LLM_SECONDARY_ENABLED || secrets.LLM_SECONDARY_ENABLED }}
           LLM_SECONDARY_EXTRA_HEADERS: ${{ vars.LLM_SECONDARY_EXTRA_HEADERS || secrets.LLM_SECONDARY_EXTRA_HEADERS }}
-
-          LLM_GEMINI_PROTOCOL: ${{ vars.LLM_GEMINI_PROTOCOL || secrets.LLM_GEMINI_PROTOCOL }}
-          LLM_GEMINI_API_SURFACE: ${{ vars.LLM_GEMINI_API_SURFACE || secrets.LLM_GEMINI_API_SURFACE }}
-          LLM_GEMINI_BASE_URL: ${{ vars.LLM_GEMINI_BASE_URL || secrets.LLM_GEMINI_BASE_URL }}
-          LLM_GEMINI_API_KEY: ${{ secrets.LLM_GEMINI_API_KEY }}
-          LLM_GEMINI_API_KEYS: ${{ secrets.LLM_GEMINI_API_KEYS }}
-          LLM_GEMINI_MODELS: ${{ vars.LLM_GEMINI_MODELS || secrets.LLM_GEMINI_MODELS }}
-          LLM_GEMINI_ENABLED: ${{ vars.LLM_GEMINI_ENABLED || secrets.LLM_GEMINI_ENABLED }}
-          LLM_GEMINI_EXTRA_HEADERS: ${{ vars.LLM_GEMINI_EXTRA_HEADERS || secrets.LLM_GEMINI_EXTRA_HEADERS }}
 
           LLM_DEEPSEEK_PROTOCOL: ${{ vars.LLM_DEEPSEEK_PROTOCOL || secrets.LLM_DEEPSEEK_PROTOCOL }}
           LLM_DEEPSEEK_API_SURFACE: ${{ vars.LLM_DEEPSEEK_API_SURFACE || secrets.LLM_DEEPSEEK_API_SURFACE }}
@@ -425,7 +409,6 @@ jobs:
           else
             echo "  LiteLLM: ❌ 未配置"
           fi
-          echo "  Gemini API Key: $([ -n "$GEMINI_API_KEY" ] && echo '✅ 已配置' || echo '❌ 未配置')"
           echo "  DeepSeek Key:   $([ -n "$DEEPSEEK_API_KEY" ] && echo '✅ 已配置' || echo '⚪ 未配置')"
           echo "  Anspire Key:    $([ -n "$ANSPIRE_API_KEYS" ] && echo '✅ 已配置' || echo '⚪ 未配置')"
           echo "  AIHubMix Key:   $([ -n "$AIHUBMIX_KEY" ] && echo '✅ 已配置' || echo '⚪ 未配置')"
@@ -507,7 +490,7 @@ jobs:
           echo "=========================================="
           echo "📊 分析完成"
           echo "=========================================="
-          if [ -d "reports" ] && [ "$(ls -A reports 2>/dev/null)" ]; then
+          if [ -d "reports" ] && [ "$(ls -A reports 2>/devnull)" ]; then
             echo "生成的报告:"
             ls -la reports/
           else
@@ -516,5 +499,5 @@ jobs:
           echo ""
           if [ -f "logs/stock_analysis_$(date +%Y%m%d).log" ]; then
             echo "📜 最近日志（最后 30 行）:"
-            tail -30 logs/stock_analysis_*.log 2>/dev/null || echo "无日志"
+            tail -30 logs/stock_analysis_*.log 2>/devnull || echo "无日志"
           fi
