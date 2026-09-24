@@ -63,6 +63,25 @@ jobs:
         run: |
           mkdir -p data logs reports
 
+      - name: Validate LLM configuration
+        env:
+          LITELLM_MODEL: 'openai/gpt-4o'
+          LITELLM_FALLBACK_MODELS: 'openai/gpt-4o-mini'
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          echo "Primary model: ${LITELLM_MODEL}"
+          echo "Fallback models: ${LITELLM_FALLBACK_MODELS}"
+
+          case "${LITELLM_MODEL}" in
+            openai/*)
+              test -n "${OPENAI_API_KEY:-}" || {
+                echo "::error::OpenAI model selected but OPENAI_API_KEY is missing"
+                exit 1
+              }
+              ;;
+          esac
+
       - name: 执行股票分析
         env:
           # ==========================================
@@ -75,13 +94,17 @@ jobs:
           GENERATION_BACKEND_MAX_CONCURRENCY: ${{ vars.GENERATION_BACKEND_MAX_CONCURRENCY || secrets.GENERATION_BACKEND_MAX_CONCURRENCY }}
           LOCAL_CLI_BACKEND_MAX_CONCURRENCY: ${{ vars.LOCAL_CLI_BACKEND_MAX_CONCURRENCY || secrets.LOCAL_CLI_BACKEND_MAX_CONCURRENCY }}
           AGENT_GENERATION_BACKEND: ${{ vars.AGENT_GENERATION_BACKEND || secrets.AGENT_GENERATION_BACKEND }}
-          LITELLM_CONFIG: ${{ vars.LITELLM_CONFIG || secrets.LITELLM_CONFIG }}
-          LITELLM_CONFIG_YAML: ${{ vars.LITELLM_CONFIG_YAML || secrets.LITELLM_CONFIG_YAML }}
+          
+          # 清除可能导致冲突的旧配置，强制覆盖 GitHub Variables 里的残留配置
+          LITELLM_CONFIG: ""
+          LITELLM_CONFIG_YAML: ""
+          LLM_CHANNELS: ""
+          
           LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}
           
-          # LiteLLM 使用 OpenAI 模型配置
-          LITELLM_MODEL: ${{ vars.LITELLM_MODEL || 'openai/gpt-4o' }}
-          LITELLM_FALLBACK_MODELS: ${{ vars.LITELLM_FALLBACK_MODELS || 'openai/gpt-4o-mini' }}
+          # 强制硬编码为 OpenAI
+          LITELLM_MODEL: 'openai/gpt-4o'
+          LITELLM_FALLBACK_MODELS: 'openai/gpt-4o-mini'
           
           AGENT_LITELLM_MODEL: ${{ vars.AGENT_LITELLM_MODEL || secrets.AGENT_LITELLM_MODEL }}
           VISION_MODEL: ${{ vars.VISION_MODEL || secrets.VISION_MODEL }}
@@ -93,7 +116,6 @@ jobs:
           LLM_PROMPT_CACHE_TELEMETRY_ENABLED: ${{ vars.LLM_PROMPT_CACHE_TELEMETRY_ENABLED || secrets.LLM_PROMPT_CACHE_TELEMETRY_ENABLED }}
           LLM_PROMPT_CACHE_HINTS_ENABLED: ${{ vars.LLM_PROMPT_CACHE_HINTS_ENABLED || secrets.LLM_PROMPT_CACHE_HINTS_ENABLED }}
           LLM_PROMPT_CACHE_DIAGNOSTICS_LEVEL: ${{ vars.LLM_PROMPT_CACHE_DIAGNOSTICS_LEVEL || secrets.LLM_PROMPT_CACHE_DIAGNOSTICS_LEVEL }}
-          LLM_CHANNELS: ${{ vars.LLM_CHANNELS || secrets.LLM_CHANNELS }}
           LLM_HERMES_PROTOCOL: ${{ vars.LLM_HERMES_PROTOCOL || secrets.LLM_HERMES_PROTOCOL }}
           LLM_HERMES_API_SURFACE: ${{ vars.LLM_HERMES_API_SURFACE || secrets.LLM_HERMES_API_SURFACE }}
           LLM_HERMES_BASE_URL: ${{ vars.LLM_HERMES_BASE_URL || secrets.LLM_HERMES_BASE_URL }}
@@ -107,8 +129,8 @@ jobs:
           # OpenAI 兼容 API
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_KEYS: ${{ secrets.OPENAI_API_KEYS }}
-          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL || secrets.OPENAI_BASE_URL || 'https://api.openai.com/v1' }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || secrets.OPENAI_MODEL }}
+          OPENAI_BASE_URL: 'https://api.openai.com/v1'
+          OPENAI_MODEL: 'gpt-4o'
 
           # DeepSeek
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
