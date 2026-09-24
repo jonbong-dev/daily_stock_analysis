@@ -65,7 +65,8 @@ jobs:
 
       - name: Validate LLM configuration
         env:
-          LITELLM_MODEL: 'huggingface/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B'
+          # Change to a model officially supported by HF Serverless Inference
+          LITELLM_MODEL: 'huggingface/Qwen/Qwen2.5-72B-Instruct'
           HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
         run: |
           set -euo pipefail
@@ -104,9 +105,9 @@ jobs:
           HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
           HF_TOKEN: ${{ secrets.HUGGINGFACE_API_KEY }}
           
-          # 强制使用指定的 Hugging Face DeepSeek 模型
-          LITELLM_MODEL: 'huggingface/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B'
-          LITELLM_FALLBACK_MODELS: ''
+          # Use supported Hugging Face Serverless Models
+          LITELLM_MODEL: 'huggingface/Qwen/Qwen2.5-72B-Instruct'
+          LITELLM_FALLBACK_MODELS: 'huggingface/meta-llama/Meta-Llama-3-8B-Instruct'
           
           AGENT_LITELLM_MODEL: ${{ vars.AGENT_LITELLM_MODEL || secrets.AGENT_LITELLM_MODEL }}
           VISION_MODEL: ${{ vars.VISION_MODEL || secrets.VISION_MODEL }}
