@@ -68,7 +68,6 @@ jobs:
           # ==========================================
           # AI 配置
           # ==========================================
-          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
           GENERATION_BACKEND: litellm
           GENERATION_FALLBACK_BACKEND: litellm
           GENERATION_BACKEND_TIMEOUT_SECONDS: ${{ vars.GENERATION_BACKEND_TIMEOUT_SECONDS || secrets.GENERATION_BACKEND_TIMEOUT_SECONDS }}
@@ -80,9 +79,9 @@ jobs:
           LITELLM_CONFIG_YAML: ${{ vars.LITELLM_CONFIG_YAML || secrets.LITELLM_CONFIG_YAML }}
           LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}
           
-          # Use LiteLLM's Gemini model syntax natively
-          LITELLM_MODEL: ${{ vars.LITELLM_MODEL || 'gemini/gemini-2.5-flash' }}
-          LITELLM_FALLBACK_MODELS: ${{ vars.LITELLM_FALLBACK_MODELS || 'gemini/gemini-2.0-flash' }}
+          # 强制硬编码 Gemini 模型，忽略 GitHub Variables 中的无效 HuggingFace 覆盖值
+          LITELLM_MODEL: 'gemini/gemini-2.5-flash'
+          LITELLM_FALLBACK_MODELS: 'gemini/gemini-2.0-flash'
           
           AGENT_LITELLM_MODEL: ${{ vars.AGENT_LITELLM_MODEL || secrets.AGENT_LITELLM_MODEL }}
           VISION_MODEL: ${{ vars.VISION_MODEL || secrets.VISION_MODEL }}
@@ -95,8 +94,6 @@ jobs:
           LLM_PROMPT_CACHE_HINTS_ENABLED: ${{ vars.LLM_PROMPT_CACHE_HINTS_ENABLED || secrets.LLM_PROMPT_CACHE_HINTS_ENABLED }}
           LLM_PROMPT_CACHE_DIAGNOSTICS_LEVEL: ${{ vars.LLM_PROMPT_CACHE_DIAGNOSTICS_LEVEL || secrets.LLM_PROMPT_CACHE_DIAGNOSTICS_LEVEL }}
           LLM_CHANNELS: ${{ vars.LLM_CHANNELS || secrets.LLM_CHANNELS }}
-          
-          # ... [Remaining LLM definitions] ...
           LLM_HERMES_PROTOCOL: ${{ vars.LLM_HERMES_PROTOCOL || secrets.LLM_HERMES_PROTOCOL }}
           LLM_HERMES_API_SURFACE: ${{ vars.LLM_HERMES_API_SURFACE || secrets.LLM_HERMES_API_SURFACE }}
           LLM_HERMES_BASE_URL: ${{ vars.LLM_HERMES_BASE_URL || secrets.LLM_HERMES_BASE_URL }}
@@ -230,7 +227,7 @@ jobs:
           LLM_ZHIPU_EXTRA_HEADERS: ${{ vars.LLM_ZHIPU_EXTRA_HEADERS || secrets.LLM_ZHIPU_EXTRA_HEADERS }}
 
           LLM_MINIMAX_PROTOCOL: ${{ vars.LLM_MINIMAX_PROTOCOL || secrets.LLM_MINIMAX_PROTOCOL }}
-          LLM_MINIMAX_API_SURFACE: ${{ vars.LLM_MINIMAX_API_SURFACE || secrets.LLM_MINIMAX_API_SURFACE }}
+          LLM_MINIMAX_API_SURFACE: ${{ LLM_MINIMAX_API_SURFACE || secrets.LLM_MINIMAX_API_SURFACE }}
           LLM_MINIMAX_BASE_URL: ${{ vars.LLM_MINIMAX_BASE_URL || secrets.LLM_MINIMAX_BASE_URL }}
           LLM_MINIMAX_API_KEY: ${{ secrets.LLM_MINIMAX_API_KEY }}
           LLM_MINIMAX_API_KEYS: ${{ secrets.LLM_MINIMAX_API_KEYS }}
@@ -428,7 +425,6 @@ jobs:
           else
             echo "  LiteLLM: ❌ 未配置"
           fi
-          echo "  HuggingFace Key: $([ -n "$HUGGINGFACE_API_KEY" ] && echo '✅ 已配置' || echo '⚪ 未配置')"
           echo "  Gemini API Key: $([ -n "$GEMINI_API_KEY" ] && echo '✅ 已配置' || echo '❌ 未配置')"
           echo "  DeepSeek Key:   $([ -n "$DEEPSEEK_API_KEY" ] && echo '✅ 已配置' || echo '⚪ 未配置')"
           echo "  Anspire Key:    $([ -n "$ANSPIRE_API_KEYS" ] && echo '✅ 已配置' || echo '⚪ 未配置')"
